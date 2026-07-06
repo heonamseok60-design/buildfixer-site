@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>결제 실패 | 빌드픽서</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .result-wrap { max-width: 480px; margin: 0 auto; padding: 90px 24px; text-align: center; }
+  .result-icon { font-size: 48px; margin-bottom: 18px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="logo"><img src="assets/logo-mark.png" alt="빌드픽서" class="mark"> 빌드픽서</a>
+  </div>
+</header>
+
+<section class="result-wrap">
+  <div class="result-icon">⚠️</div>
+  <h2>결제가 완료되지 않았습니다</h2>
+  <p style="color:var(--gray-500);" id="r-reason">결제가 취소되었거나 오류가 발생했습니다.</p>
+  <p style="color:var(--gray-500);">문의: 010-7757-1098 · sim9416@nate.com</p>
+  <div style="margin-top:26px;"><a href="index.html" class="btn btn-dark">홈으로</a></div>
+</section>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const message = params.get("message");
+  if (message) document.getElementById("r-reason").textContent = message;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>결제 확인 중 | 빌드픽서</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .result-wrap { max-width: 480px; margin: 0 auto; padding: 90px 24px; text-align: center; }
+  .result-icon { font-size: 48px; margin-bottom: 18px; }
+  .result-detail { text-align: left; background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius); padding: 20px; margin-top: 24px; font-size: 14px; color: var(--gray-700); }
+  .result-detail .row { display: flex; justify-content: space-between; padding: 5px 0; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="logo"><img src="assets/logo-mark.png" alt="빌드픽서" class="mark"> 빌드픽서</a>
+  </div>
+</header>
+
+<section class="result-wrap">
+  <div id="state-loading">
+    <div class="result-icon">⏳</div>
+    <h2>결제 승인 확인 중입니다...</h2>
+    <p style="color:var(--gray-500);">잠시만 기다려 주세요.</p>
+  </div>
+
+  <div id="state-success" style="display:none;">
+    <div class="result-icon">✅</div>
+    <h2>결제가 완료되었습니다</h2>
+    <p style="color:var(--gray-500);">이용해 주셔서 감사합니다. 영수증은 이메일로 안내드립니다.</p>
+    <div class="result-detail">
+      <div class="row"><span>주문번호</span><span id="r-order-id"></span></div>
+      <div class="row"><span>결제금액</span><span id="r-amount"></span></div>
+    </div>
+    <div style="margin-top:26px;"><a href="index.html" class="btn btn-dark">홈으로</a></div>
+  </div>
+
+  <div id="state-error" style="display:none;">
+    <div class="result-icon">⚠️</div>
+    <h2>결제 승인에 실패했습니다</h2>
+    <p style="color:var(--gray-500);" id="r-error-msg"></p>
+    <p style="color:var(--gray-500);">문의: 010-7757-1098 · sim9416@nate.com</p>
+  </div>
+</section>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const paymentKey = params.get("paymentKey");
+  const orderId = params.get("orderId");
+  const amount = params.get("amount");
+
+  async function confirmPayment() {
+    if (!paymentKey || !orderId || !amount) {
+      document.getElementById("state-loading").style.display = "none";
+      document.getElementById("state-error").style.display = "block";
+      document.getElementById("r-error-msg").textContent = "결제 정보가 올바르지 않습니다.";
+      return;
+    }
+    try {
+      const res = await fetch("/api/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentKey, orderId, amount: Number(amount) }),
+      });
+      const data = await res.json();
+      document.getElementById("state-loading").style.display = "none";
+      if (!res.ok) {
+        document.getElementById("state-error").style.display = "block";
+        document.getElementById("r-error-msg").textContent = data.message || "승인 처리 중 오류가 발생했습니다.";
+        return;
+      }
+      document.getElementById("state-success").style.display = "block";
+      document.getElementById("r-order-id").textContent = orderId;
+      document.getElementById("r-amount").textContent = Number(amount).toLocaleString("ko-KR") + "원";
+    } catch (e) {
+      document.getElementById("state-loading").style.display = "none";
+      document.getElementById("state-error").style.display = "block";
+      document.getElementById("r-error-msg").textContent = "서버 통신 중 오류가 발생했습니다.";
+    }
+  }
+
+  confirmPayment();
+</script>
+
+</body>
+</html>

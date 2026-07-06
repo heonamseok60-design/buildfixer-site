@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>결제하기 | 빌드픽서</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .pay-wrap { max-width: 520px; margin: 0 auto; padding: 56px 24px 80px; }
+  .pay-summary { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius); padding: 22px; margin-bottom: 24px; }
+  .pay-summary .row { display: flex; justify-content: space-between; font-size: 14.5px; padding: 6px 0; color: var(--gray-700); }
+  .pay-summary .row.total { font-size: 19px; font-weight: 800; color: var(--navy); border-top: 1px solid var(--gray-300); margin-top: 8px; padding-top: 14px; }
+  .pay-methods { display: flex; gap: 10px; margin-top: 18px; }
+  .pay-method-btn {
+    flex: 1;
+    padding: 14px 8px;
+    border-radius: 9px;
+    border: 1px solid var(--gray-300);
+    background: var(--white);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: border-color 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease);
+  }
+  .pay-method-btn.active { border-color: var(--accent); color: var(--blue); background: #eaf2fc; }
+  .pay-actions { margin-top: 22px; }
+  .pay-error { color: #c0392b; font-size: 14px; margin-top: 12px; display: none; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="logo"><img src="assets/logo-mark.png" alt="빌드픽서" class="mark"> 빌드픽서</a>
+  </div>
+</header>
+
+<section class="pay-wrap">
+  <div class="section-head" style="margin-bottom:26px;">
+    <span class="tag">Payment</span>
+    <h2 style="font-size:24px;">결제하기</h2>
+    <p style="font-size:14px;">상담 시 안내드린 금액으로 결제를 진행해 주세요.</p>
+  </div>
+
+  <div class="pay-summary">
+    <div class="row"><span>주문번호</span><span id="s-order-id">-</span></div>
+    <div class="row"><span>항목</span><span id="s-order-name">-</span></div>
+    <div class="row total"><span>결제금액</span><span id="s-amount">0원</span></div>
+  </div>
+
+  <div class="pay-methods">
+    <button type="button" class="pay-method-btn active" data-method="CARD">카드</button>
+    <button type="button" class="pay-method-btn" data-method="TRANSFER">계좌이체</button>
+    <button type="button" class="pay-method-btn" data-method="VIRTUAL_ACCOUNT">가상계좌</button>
+  </div>
+
+  <div class="pay-actions">
+    <button id="pay-btn" type="button" class="btn btn-primary btn-block">결제하기</button>
+    <p class="pay-error" id="pay-error"></p>
+    <p class="note" style="color:var(--gray-500); margin-top:14px;">문의: 010-7757-1098 · sim9416@nate.com</p>
+  </div>
+</section>
+
+<script src="https://js.tosspayments.com/v2/standard"></script>
+<script>
+  // 실제 서비스 전환 시 developers.tosspayments.com에서 발급받은 "실 연동 클라이언트 키"로 교체하세요.
+  const CLIENT_KEY = "test_ck_d46qopOB892jn2L0RdPg3ZmM75y0";
+
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get("orderId") || ("ORD-" + Date.now());
+  const amount = Number(params.get("amount") || 0);
+  const orderName = params.get("name") || "빌드픽서 서비스 이용료";
+
+  document.getElementById("s-order-id").textContent = orderId;
+  document.getElementById("s-order-name").textContent = orderName;
+  document.getElementById("s-amount").textContent = amount.toLocaleString("ko-KR") + "원";
+
+  const tossPayments = TossPayments(CLIENT_KEY);
+  const payment = tossPayments.payment({ customerKey: TossPayments.ANONYMOUS });
+
+  let selectedMethod = "CARD";
+  document.querySelectorAll(".pay-method-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".pay-method-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedMethod = btn.dataset.method;
+    });
+  });
+
+  function showError(msg) {
+    const el = document.getElementById("pay-error");
+    el.textContent = msg;
+    el.style.display = "block";
+  }
+
+  document.getElementById("pay-btn").addEventListener("click", async () => {
+    if (!amount || amount <= 0) {
+      showError("결제 금액이 올바르지 않습니다. 전달받은 링크를 다시 확인해 주세요.");
+      return;
+    }
+    try {
+      await payment.requestPayment({
+        method: selectedMethod,
+        amount: { currency: "KRW", value: amount },
+        orderId,
+        orderName,
+        successUrl: window.location.origin + "/pay-success.html",
+        failUrl: window.location.origin + "/pay-fail.html",
+      });
+    } catch (e) {
+      showError("결제 요청 중 오류가 발생했습니다: " + e.message);
+    }
+  });
+</script>
+
+</body>
+</html>

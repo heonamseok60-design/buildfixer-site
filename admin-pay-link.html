@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>결제 링크 생성 (내부용) | 빌드픽서</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .admin-wrap { max-width: 520px; margin: 0 auto; padding: 56px 24px 80px; }
+  .admin-wrap label { display:block; font-weight:600; font-size:14px; margin: 16px 0 6px; }
+  .admin-wrap input { width:100%; padding:12px 13px; border-radius:8px; border:1px solid var(--gray-300); font-size:14px; }
+  .result-box { margin-top: 26px; background: var(--gray-50); border:1px solid var(--gray-100); border-radius: var(--radius); padding: 18px; word-break: break-all; font-size: 13.5px; display:none; }
+  .copy-btn { margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="logo"><img src="assets/logo-mark.png" alt="빌드픽서" class="mark"> 빌드픽서</a>
+  </div>
+</header>
+
+<section class="admin-wrap">
+  <div class="section-head" style="margin-bottom:10px;">
+    <span class="tag">Internal</span>
+    <h2 style="font-size:22px;">결제 링크 만들기 (내부용)</h2>
+    <p style="font-size:14px;">상담 완료 후 고객에게 보낼 결제 링크를 만듭니다. 이 페이지는 검색엔진에 노출되지 않습니다.</p>
+  </div>
+
+  <label>발주처 / 현장명</label>
+  <input type="text" id="a-name" placeholder="예: OO건설 풍년길공원 현장">
+
+  <label>업무명 (결제 항목)</label>
+  <input type="text" id="a-item" placeholder="예: 착공계 작성">
+
+  <label>결제 금액 (원)</label>
+  <input type="number" id="a-amount" placeholder="예: 500000">
+
+  <button type="button" class="btn btn-primary btn-block copy-btn" id="gen-btn" style="margin-top:20px;">링크 생성</button>
+
+  <div class="result-box" id="result">
+    <div id="result-url"></div>
+    <button type="button" class="btn btn-dark copy-btn" id="copy-btn">링크 복사</button>
+  </div>
+</section>
+
+<script>
+  document.getElementById("gen-btn").addEventListener("click", () => {
+    const name = document.getElementById("a-name").value.trim();
+    const item = document.getElementById("a-item").value.trim();
+    const amount = Number(document.getElementById("a-amount").value);
+
+    if (!item || !amount || amount <= 0) {
+      alert("업무명과 금액을 정확히 입력해 주세요.");
+      return;
+    }
+
+    const orderId = "ORD-" + Date.now();
+    const orderName = name ? `${item} (${name})` : item;
+    const url = new URL(window.location.origin + "/pay.html");
+    url.searchParams.set("orderId", orderId);
+    url.searchParams.set("amount", String(amount));
+    url.searchParams.set("name", orderName);
+
+    document.getElementById("result").style.display = "block";
+    document.getElementById("result-url").textContent = url.toString();
+
+    document.getElementById("copy-btn").onclick = () => {
+      navigator.clipboard.writeText(url.toString());
+      alert("링크가 복사되었습니다.");
+    };
+  });
+</script>
+
+</body>
+</html>
