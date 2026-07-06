@@ -59,7 +59,7 @@ function updateSummary() {
 
   document.getElementById("sum-supply").textContent = formatWon(supply);
   document.getElementById("sum-vat").textContent = formatWon(vat);
-  document.getElementById("sum-total").textContent = "";
+  document.getElementById("sum-total").textContent = formatWon(total);
 
   const inquiryChecked = checked.some((el) => el.dataset.inquiry === "1");
   document.getElementById("inquiry-note").style.display = inquiryChecked ? "block" : "none";
