@@ -113,10 +113,33 @@ function submitOrder(e) {
     "요청사항: " + (memo || "-"),
   ];
 
+  const fullText = bodyLines.join("\n");
   const subject = encodeURIComponent("[빌드픽서 상담 신청] " + company);
-  const body = encodeURIComponent(bodyLines.join("\n"));
-  window.location.href = `mailto:sim9416@nate.com?subject=${subject}&body=${body}`;
+  const body = encodeURIComponent(fullText);
+
+  document.getElementById("mailto-link").href = `mailto:sim9416@nate.com?subject=${subject}&body=${body}`;
+  document.getElementById("result-text").value = fullText;
+
+  const resultBox = document.getElementById("submit-result");
+  resultBox.style.display = "block";
+  resultBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const copyBtn = document.getElementById("copy-btn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      const text = document.getElementById("result-text").value;
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = "복사 완료!";
+        setTimeout(() => { copyBtn.textContent = "내용 복사하기"; }, 1800);
+      } catch (e) {
+        alert("복사에 실패했습니다. 텍스트를 직접 선택해서 복사해 주세요.");
+      }
+    });
+  }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   renderList();

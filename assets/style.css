@@ -531,6 +531,23 @@ tbody tr:hover { background: #eaf2fc; }
 .form-fields input::placeholder, .form-fields textarea::placeholder { color: rgba(255,255,255,0.45); }
 .form-fields textarea { resize: vertical; min-height: 70px; }
 
+.submit-result { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.15); }
+.submit-result .result-title { font-weight: 700; font-size: 15px; margin: 0 0 10px; }
+.result-textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 13px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: var(--white);
+  font-size: 13px;
+  line-height: 1.6;
+  font-family: inherit;
+  resize: vertical;
+}
+.result-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+
 /* Contact */
 .contact-grid {
   display: grid;
