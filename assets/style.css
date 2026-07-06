@@ -226,6 +226,8 @@ img { max-width: 100%; display: block; }
 .btn-dark { background: var(--navy); color: var(--white); box-shadow: 0 10px 24px rgba(15,37,68,0.25); }
 .btn-dark:hover { background: var(--blue); transform: translateY(-2px); }
 .btn-block { width: 100%; }
+.btn-kakao { background: #FEE500; color: #191919; }
+.btn-kakao:hover { background: #FBD800; transform: translateY(-2px); }
 
 /* Sections */
 section { padding: 84px 0; }

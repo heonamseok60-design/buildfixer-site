@@ -125,7 +125,22 @@ function submitOrder(e) {
   resultBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
+const KAKAO_OPENCHAT_URL = "https://open.kakao.com/o/stJPrQCi";
+
 document.addEventListener("DOMContentLoaded", () => {
+  const kakaoBtn = document.getElementById("kakao-btn");
+  if (kakaoBtn) {
+    kakaoBtn.addEventListener("click", async () => {
+      const text = document.getElementById("result-text").value;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (e) {
+        // 클립보드 복사 실패해도 오픈채팅은 열어준다
+      }
+      window.open(KAKAO_OPENCHAT_URL, "_blank");
+    });
+  }
+
   const copyBtn = document.getElementById("copy-btn");
   if (copyBtn) {
     copyBtn.addEventListener("click", async () => {
